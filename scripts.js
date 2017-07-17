@@ -19,7 +19,7 @@ function initMap() {
     visible: true,
   });
 
-  map.addListener('mouseup', function(e) {
+  map.addListener('dblclick', function(e) {
     marker.setPosition(e.latLng);
     marker.visible = true;
     getWeather(e.latLng.lat(), e.latLng.lng())
@@ -28,12 +28,22 @@ function initMap() {
 
 function getWeather(lat, lng) {
   weather_points_promise = getWeatherPoints(lat, lng)
+  weather_stations_promise = getStations(lat, lng)
   weather_points_promise.then(function (res) {
     console.log(res)
-    forecast_main.innerHTML = res.data.properties.cwa
+    //console.log(res.data.properties.cwa)
+    //console.log(res.data.properties.forecast)
+    forecast_main.innerHTML = res.data.properties.cwa + '<br>' + res.data.properties.relativeLocation.properties.city + ', ' + res.data.properties.relativeLocation.properties.state + '<br><br>'
+  })
+  weather_stations_promise.then(function (res){
+    console.log(res)
   })
 }
 
 function getWeatherPoints(lat, lng){
   return axios.get(weather_api + '/points/' + lat + ',' + lng, "", "")
 };
+
+function getStations(lat, lng){
+  return axios.get(weather_api + '/points/' + lat + ',' + lng + '/stations', "", "")
+}
